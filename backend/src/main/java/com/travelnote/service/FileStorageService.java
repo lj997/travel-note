@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,6 +72,8 @@ public class FileStorageService {
             throw new RuntimeException("不支持的文件类型: " + contentType);
         }
         
+        byte[] fileContent = file.getBytes();
+        
         String fileExtension = getFileExtension(originalFileName);
         String uniqueFileName = UUID.randomUUID().toString() + "." + fileExtension;
         
@@ -82,13 +83,13 @@ public class FileStorageService {
         Files.createDirectories(dateDirectory);
         
         Path targetLocation = dateDirectory.resolve(uniqueFileName);
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+        Files.write(targetLocation, fileContent);
         
-        int[] dimensions = getImageDimensions(file.getInputStream(), contentType);
+        int[] dimensions = getImageDimensions(new ByteArrayInputStream(fileContent), contentType);
         int width = dimensions[0];
         int height = dimensions[1];
         
-        String thumbnailFileName = createThumbnail(file, dateDirectory, uniqueFileName, contentType);
+        String thumbnailFileName = createThumbnailFromBytes(fileContent, dateDirectory, uniqueFileName, contentType);
         
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("用户不存在"));
@@ -126,13 +127,14 @@ public class FileStorageService {
         return new int[]{0, 0};
     }
     
-    private String createThumbnail(MultipartFile file, Path directory, String originalFileName, String contentType) {
+    private String createThumbnailFromBytes(byte[] fileContent, Path directory, String originalFileName, String contentType) {
         try {
             String thumbnailFileName = "thumb_" + originalFileName;
             Path thumbnailPath = directory.resolve(thumbnailFileName);
             
-            BufferedImage originalImage = ImageIO.read(file.getInputStream());
+            BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(fileContent));
             if (originalImage == null) {
+                logger.warn("无法读取图片，跳过缩略图生成: {}", contentType);
                 return originalFileName;
             }
             
@@ -158,14 +160,26 @@ public class FileStorageService {
             g2d.drawImage(scaledImage, 0, 0, null);
             g2d.dispose();
             
-            String formatName = getFormatName(contentType);
-            ImageIO.write(thumbnailImage, formatName, thumbnailPath.toFile());
+            String formatName = getSafeFormatName(contentType);
+            boolean success = ImageIO.write(thumbnailImage, formatName, thumbnailPath.toFile());
+            
+            if (!success) {
+                logger.warn("无法写入缩略图，使用原文件名: {}", contentType);
+                return originalFileName;
+            }
             
             return thumbnailFileName;
         } catch (Exception e) {
             logger.warn("创建缩略图失败", e);
             return originalFileName;
         }
+    }
+    
+    private String getSafeFormatName(String contentType) {
+        if ("image/webp".equals(contentType)) {
+            return "jpg";
+        }
+        return getFormatName(contentType);
     }
     
     private String getFormatName(String contentType) {

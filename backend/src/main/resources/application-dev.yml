@@ -1,0 +1,58 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: travel-note
+  
+  datasource:
+    url: jdbc:h2:mem:travel_note;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+  
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  web:
+    resources:
+      static-locations: classpath:/static/, file:uploads/
+
+file:
+  upload:
+    path: uploads/
+    max-size: 52428800
+    allowed-types: image/jpeg,image/png,image/gif,image/webp
+
+jwt:
+  secret: travelNoteJwtSecretKeyMustBeVeryLongAtLeast256BitsForSecurityDevelopment
+  expiration: 86400000
+
+logging:
+  level:
+    com.travelnote: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
