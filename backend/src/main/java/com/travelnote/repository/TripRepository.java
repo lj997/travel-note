@@ -24,7 +24,7 @@ public interface TripRepository extends JpaRepository<Trip, Long> {
     @Query("SELECT DISTINCT t FROM Trip t JOIN t.tags tag WHERE t.user.id = :userId AND tag.name IN :tagNames")
     List<Trip> findByUserIdAndTagNames(@Param("userId") Long userId, @Param("tagNames") List<String> tagNames);
     
-    @Query("SELECT t FROM Trip t WHERE t.user.id = :userId AND (LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    @Query("SELECT t FROM Trip t WHERE t.user.id = :userId AND (LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Trip> searchByUserIdAndKeyword(@Param("userId") Long userId, @Param("keyword") String keyword);
     
     @Query("SELECT t FROM Trip t WHERE t.isPublic = true ORDER BY t.createdAt DESC")
