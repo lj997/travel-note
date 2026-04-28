@@ -1,0 +1,97 @@
+# 后端 - Spring Boot
+backend/target/
+backend/.idea/
+backend/*.iml
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+backend/*.log
+backend/*.db
+backend/.settings/
+backend/.classpath
+backend/.project
+backend/.spring-boot-devtools.properties
+backend/bin/
+backend/!mvnw
+backend/!mvnw.cmd
+backend/.apt_generated/
+backend/.factorypath
+
+# 后端应用配置
+backend/src/main/resources/application-local.yml
+backend/src/main/resources/application-local.properties
+backend/src/main/resources/application-test.yml
+backend/src/main/resources/application-test.properties
+
+# 前端 - Vue 3
+frontend/node_modules/
+frontend/dist/
+frontend/.vscode/
+frontend/.idea/
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.env.local
+frontend/.env.*.local
+frontend/coverage/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/playwright/.cache/
+frontend/.output/
+frontend/.nuxt/
+frontend/dist-ssr/
+
+# 通用
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+*~
+*.log
+node_modules/
+dist/
+build/
+.cache/
+
+# 图片上传目录
+backend/uploads/
+backend/uploads/**/*
+!backend/uploads/.gitkeep
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 测试覆盖率
+coverage/
+*.lcov
+.nyc_output
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 操作系统文件
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
